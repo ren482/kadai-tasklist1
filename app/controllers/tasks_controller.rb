@@ -1,4 +1,7 @@
 class TasksController < ApplicationController
+
+    before_action :require_user_logged_in, only: [:show,:new, :create, :edit, :update, :destroy]
+    
     def index
         @tasks = Task.all
     end
@@ -8,22 +11,19 @@ class TasksController < ApplicationController
     end
     
     def new 
-        @task = Task.new
+        @task = current_user.tasks.build(params[:content])
     end
     
     def create
-        @task = Task.new(task_params)
-        
-        if @task.save
-            
-        flash[:success] = "タスクが追加されました"
-        redirect_to @task
-        
-        else
-             
-        flash.now[:danger] = "タスクの追加に失敗しました" 
-        render :new
-        end
+    @task = current_user.tasks.build(task_params)
+    if @task.save
+      flash[:success] = 'タスクを追加しました。'
+      redirect_to root_url
+    else
+      @tasks = Task.order(id: :desc).page(params[:page])
+      flash.now[:danger] = 'タスクの追加に失敗しました。'
+      render :new
+    end
     end
     
     def edit
@@ -31,7 +31,7 @@ class TasksController < ApplicationController
     end
     
     def update
-        @task = Task.find(params[:id])
+        @task = current_user.tasks.build(task_params)
         
         if @task.save
             flash[:success] = "タスクが編集されました"
@@ -42,13 +42,6 @@ class TasksController < ApplicationController
         end
     end
     
-    # def destroy
-    #     @task = Task.find(params[:id])
-    #     @task.destroy
-        
-    #     flash[:success] = "タスクは削除されました"
-    #     redirect_to tasks_path
-    # end
     
       def destroy
     @task = Task.find(params[:id])
