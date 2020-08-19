@@ -1,9 +1,7 @@
 <h1>タスクの追加</h1>
-<%= form_with(model: @task, local: true) do |f| %>
- <%= f.label :content, "タスク" %>
- <%= f.text_field :content %>
+
+ <%= render "form.html.erb", message: "追加する" %>
  
- <%= f.submit "追加" %>
-<% end %>
+ 
 
 <%= link_to "一覧に戻る", tasks_path %>
