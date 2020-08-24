@@ -1,9 +1,10 @@
 class TasksController < ApplicationController
 
-    before_action :require_user_logged_in, only: [:show,:new, :create, :edit, :update, :destroy]
+    before_action :require_user_logged_in
+    before_action :correct_user, only: [:destroy, :edit]
     
     def index
-        @tasks = Task.all
+        @tasks = current_user.tasks
     end
     
     def show
@@ -11,7 +12,7 @@ class TasksController < ApplicationController
     end
     
     def new 
-        @task = current_user.tasks.build(params[:content])
+        @task = current_user.tasks.build
     end
     
     def create
@@ -48,13 +49,20 @@ class TasksController < ApplicationController
     @task.destroy
 
     flash.now[:success] = 'タスク は正常に削除されました'
-    redirect_to tasks_path
+    redirect_to tasks_url
       end
      
     private
     
     def task_params
         params.require(:task).permit(:content, :status)
+    end
+    
+    def correct_user
+        @task = current_user.tasks.find_by(id: params[:id])
+        unless @task
+            redirect_to tasks_url
+        end
     end
      
 end

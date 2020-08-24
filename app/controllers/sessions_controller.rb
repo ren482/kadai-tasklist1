@@ -4,12 +4,12 @@ class SessionsController < ApplicationController
 
   def create
    
-    name = params[:session][:name]
+    email = params[:session][:email]
     password = params[:session][:password]
    
-    if login(name, password)
+    if login(email, password)
       flash[:success] = "ログインに成功しました"
-      redirect_to tasks_url
+      redirect_to "/"
     else
       flash.now[:danger] = "ログインに失敗しました"
       render :new
@@ -25,9 +25,9 @@ class SessionsController < ApplicationController
   
   private
   
-  def login(name, password)
+  def login(email, password)
 
-    @user = User.find_by(name: name)
+    @user = User.find_by(email: email)
     #authenticateメソッド（引数はpassword）は、@userに代入されているレコードのパスワードが正しいかを確認する
     if @user && @user.authenticate(password)
       #下記一文により、ブラウザにcookieとして、サーバーにsessionとして、ログイン状態が維持されることになります
