@@ -1,7 +1,7 @@
 class TasksController < ApplicationController
 
     before_action :require_user_logged_in
-    before_action :correct_user, only: [:destroy, :edit]
+    before_action :correct_user, only: [:destroy, :edit, :show]
     
     def index
         @tasks = current_user.tasks
@@ -32,9 +32,9 @@ class TasksController < ApplicationController
     end
     
     def update
-        @task = current_user.tasks.build(task_params)
+        @task = current_user.tasks.find(params[:id])
         
-        if @task.save
+        if @task.update(task_params)
             flash[:success] = "タスクが編集されました"
             redirect_to @task
         else
